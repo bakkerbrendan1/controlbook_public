@@ -55,27 +55,29 @@ class HummingbirdDynamics:
         pwm_left = u[0][0]
         pwm_right = u[1][0]
         # The equations of motion go here
-        M22 = 
-        M23 = 
-        M33 = 
-        M = np.array([[, , ],
-                      [, , ],
-                      [, , ]
+        M22 = P.m1 * P.ell1**2 + P.m2 * P.ell2**2 + P.J2y + P.J1y*np.cos(phi)**2 + P.J1z*np.sin(phi)**2
+        M23 = (P.J1y - P.J1z) * np.sin(phi) * np.cos(phi) * np.cos(theta)
+        M33 = (P.m1*P.ell1**2 + P.m2*P.ell2**2 + P.J2z + P.J1y*np.sin(phi)**2 + P.J1z*np.cos(phi)**2) * np.cos(theta)**2 \
+              + (P.J1x + P.J2x)*np.sin(theta)**2 + P.m3*(P.ell3x**2 + P.ell3y**2) + P.J3z
+        
+        M = np.array([[P.J1x, 0, -P.J1x * np.sin(theta)],
+                      [0, M22, M23],
+                      [-P.J1x*np.sin(theta), M23, M33]
                       ])
         C = np.array([[],
                       [],
                       [],
                      ])
-        partialP = np.array([[],
-                             [],
-                             [],
+        partialP = np.array([[0],
+                             [(P.m1 * P.ell1 + P.m2*P.ell2)*P.g*np.cos(theta)],
+                             [0],
                             ])
         force = P.km * (pwm_left + pwm_right)
         torque = self.d * P.km * (pwm_left - pwm_right)
         tau = np.array([[],
                         [],
                         []])
-        B = 
+        B = 0.001 * np.eye(3) # not sure if this is right
         qddot = np.linalg.inv(M) @ (-C - partialP + tau - B @ state[3:6])
         phiddot = qddot[0][0]
         thetaddot = qddot[1][0]
