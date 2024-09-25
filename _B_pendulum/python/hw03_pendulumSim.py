@@ -4,6 +4,8 @@ from signalGenerator import signalGenerator
 from pendulumAnimation import pendulumAnimation
 from dataPlotter import dataPlotter
 from pendulumDynamics import pendulumDynamics
+import matplotlib
+matplotlib.use('tkagg')
 
 # instantiate pendulum, controller, and reference classes
 pendulum = pendulumDynamics(alpha=0.0)

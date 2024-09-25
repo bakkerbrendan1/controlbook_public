@@ -4,6 +4,8 @@ from signalGenerator import signalGenerator
 from armAnimation import armAnimation
 from dataPlotter import dataPlotter
 from armDynamics import armDynamics
+import matplotlib
+matplotlib.use('tkagg')
 
 # instantiate arm, controller, and reference classes
 arm = armDynamics()

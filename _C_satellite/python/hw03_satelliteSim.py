@@ -4,6 +4,8 @@ from signalGenerator import signalGenerator
 from satelliteAnimation import satelliteAnimation
 from dataPlotter import dataPlotter
 from satelliteDynamics import satelliteDynamics
+import matplotlib
+matplotlib.use('tkagg')
 
 # instantiate satellite, controller, and reference classes
 satellite = satelliteDynamics()
