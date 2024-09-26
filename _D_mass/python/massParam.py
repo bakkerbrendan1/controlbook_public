@@ -2,8 +2,8 @@
 import numpy as np
 
 # Physical parameters of the arm known to the controller
-m = 5  # mass kg
-k = 3  # spring constant Kg/s^2
+m = 5.0  # mass kg
+k = 3.0  # spring constant Kg/s^2
 b = 0.5  # damping coefficient Kg/s
 
 # parameters for animation
@@ -11,11 +11,11 @@ length = 5.0
 width = 1.0
 
 # Initial Conditions
-z0 = 0  # initial position of mass, m
-zdot0 = 0  # initial velocity of mass m/s
+z0 = 0.0  # initial position of mass, m
+zdot0 = 0.0  # initial velocity of mass m/s
 
 # Simulation Parameters
-t_start = 0 # Start time of simulation
+t_start = 0.0 # Start time of simulation
 t_end = 15  # End time of simulation
 Ts = 0.01  # sample time for simulation
 t_plot = 0.1  # the plotting and animation is updated at this rate
@@ -25,5 +25,5 @@ t_plot = 0.1  # the plotting and animation is updated at this rate
 # beta =   # dirty derivative gain
 
 # saturation limits
-# F_max =   # Max force, N
+F_max = 100_000  # Max force, N
 
