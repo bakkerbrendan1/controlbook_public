@@ -9,8 +9,8 @@ matplotlib.use('tkagg')
 
 # instantiate pendulum, controller, and reference classes
 blockbeam = blockbeamDynamics(alpha=0.0)
-reference = signalGenerator(amplitude=0.5, frequency=0.02)
-force = signalGenerator(amplitude=1, frequency=1)
+reference = signalGenerator(amplitude=0.0005, frequency=0.02)
+force = signalGenerator(amplitude=0.00001, frequency=0.1)
 
 # instantiate the simulation plots and animation
 dataPlot = dataPlotter()
@@ -22,11 +22,12 @@ while t < P.t_end:  # main simulation loop
     t_next_plot = t + P.t_plot
     while t < t_next_plot:
         r = reference.square(t)
-        u = force.sin(t)
+        u = force.sin(t) + 11.5
         y = blockbeam.update(u)  # Propagate the dynamics
         t = t + P.Ts  # advance time by Ts
     # update animation and data plots at rate t_plot
     animation.update(blockbeam.state)
+    # def update(self, t, reference, states, ctrl):
     dataPlot.update(t, r, blockbeam.state, u)
     plt.pause(0.0001)  # allows time for animation to draw
 

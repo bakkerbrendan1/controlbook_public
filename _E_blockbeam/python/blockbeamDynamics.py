@@ -17,10 +17,10 @@ class blockbeamDynamics:
         # Mass of the beam, kg
         self.m2 = P.m2 * (1.+alpha*(2.*np.random.rand()-1.))
         # Length of the rod, m
-        self.ell = P.ell * (1.+alpha*(2.*np.random.rand()-1.))
+        self.ell = P.length * (1.+alpha*(2.*np.random.rand()-1.))
         # gravity constant is well known, don't change.
         self.g = P.g
-        self.force_limit = P.F_max
+        self.force_limit = P.Fmax
 
     def update(self, u):
         # This is the external method that takes the input u at time
@@ -39,18 +39,24 @@ class blockbeamDynamics:
         thetadot = state[3][0]
         F = u
         # The equations of motion.
-        M = np.array([[self.m1 + self.m2,
-                       self.m1 * (self.ell/2.0) * np.cos(theta)],
-                       [self.m1 * (self.ell/2.0) * np.cos(theta),
-                        self.m1 * (self.ell**2/3.0)]])
-        C = np.array([[self.m1 * (self.ell/2.0)
-                       * thetadot**2 * np.sin(theta)
-                       + F - self.b*zdot],
-                       [self.m1 * self.g * (self.ell/2.0)
-                        * np.sin(theta)]])
-        tmp = np.linalg.inv(M) @ C
-        zddot = tmp[0][0]
-        thetaddot = tmp[1][0]
+        # M = np.array([[self.m1 + self.m2,
+        #                self.m1 * (self.ell/2.0) * np.cos(theta)],
+        #                [self.m1 * (self.ell/2.0) * np.cos(theta),
+        #                 self.m1 * (self.ell**2/3.0)]])
+        # C = np.array([[self.m1 * (self.ell/2.0)
+        #                * thetadot**2 * np.sin(theta)
+        #                + F - self.b*zdot],
+        #                [self.m1 * self.g * (self.ell/2.0)
+        #                 * np.sin(theta)]])
+        # tmp = np.linalg.inv(M) @ C
+        # zddot = tmp[0][0]
+        # thetaddot = tmp[1][0]
+        zddot = -self.g * np.sin(theta) + z*thetadot**2
+        thetaddot = 3*(-4*self.m1*z*thetadot*zdot + (2*F*self.ell -\
+                                                      self.ell*self.g*self.m2 -\
+                                                      2*self.g*self.m1*z)*np.cos(theta)) /\
+                    (2 * (self.ell**2 * self.m2 + 3*self.m1*z**2))
+
         # build xdot and return
         xdot = np.array([[zdot], [thetadot], [zddot], [thetaddot]])
         return xdot

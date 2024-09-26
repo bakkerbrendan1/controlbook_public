@@ -9,10 +9,10 @@ import matplotlib
 matplotlib.use('tkagg')
 
 # instantiate arm, controller, and reference classes
-arm = massDynamics()
+mass = massDynamics()
 #second_arm = armDynamics()
 reference = signalGenerator(amplitude=0.01, frequency=0.02)
-force = signalGenerator(amplitude=0.2, frequency=0.05)
+force = signalGenerator(amplitude=2, frequency=0.05)
 #torque2 = signalGenerator(amplitude=0.1, frequency=0.01)
 
 # instantiate the simulation plots and animation
@@ -31,13 +31,13 @@ while t < P.t_end:  # main simulation loop
         r = reference.square(t)
         u = force.square(t)
         #u2 = torque2.sin(t)
-        y = arm.update(u)  # Propagate the dynamics
+        y = mass.update(u)  # Propagate the dynamics
         #y2 = second_arm.update(u2)
         t = t + P.Ts  # advance time by Ts
     # update animation and data plots
-    animation.update(arm.state)
+    animation.update(mass.state)
     #animation2.update(second_arm.state)
-    dataPlot.update(t, r, arm.state, u)
+    dataPlot.update(t, r, mass.state, u)
     #dataPlot2.update(t, r, second_arm.state, u2)
 
     # the pause causes the figure to be displayed during the
