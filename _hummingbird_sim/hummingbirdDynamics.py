@@ -54,19 +54,35 @@ class HummingbirdDynamics:
         psidot = state[5][0]
         pwm_left = u[0][0]
         pwm_right = u[1][0]
+
+        sp = np.sin(phi)
+        st = np.sin(theta)
+        sps = np.sin(psi)
+        cp = np.cos(phi)
+        ct = np.cos(theta)
+        cps = np.cos(psi)
+
         # The equations of motion go here
-        M22 = P.m1 * P.ell1**2 + P.m2 * P.ell2**2 + P.J2y + P.J1y*np.cos(phi)**2 + P.J1z*np.sin(phi)**2
-        M23 = (P.J1y - P.J1z) * np.sin(phi) * np.cos(phi) * np.cos(theta)
-        M33 = (P.m1*P.ell1**2 + P.m2*P.ell2**2 + P.J2z + P.J1y*np.sin(phi)**2 + P.J1z*np.cos(phi)**2) * np.cos(theta)**2 \
-              + (P.J1x + P.J2x)*np.sin(theta)**2 + P.m3*(P.ell3x**2 + P.ell3y**2) + P.J3z
-        
-        M = np.array([[P.J1x, 0, -P.J1x * np.sin(theta)],
+        M22 = P.m1 * P.ell1**2 + P.m2 * P.ell2**2 + P.J2y + P.J1y*cp**2 + P.J1z*sp**2
+        M23 = (P.J1y - P.J1z) * sp * cp * ct
+        M33 = (P.m1*P.ell1**2 + P.m2*P.ell2**2 + P.J2z + P.J1y*sp**2 + P.J1z*cp**2) * ct**2 \
+              + (P.J1x + P.J2x)*st**2 + P.m3*(P.ell3x**2 + P.ell3y**2) + P.J3z
+        N33 = 2*(P.J1x + P.J2x - P.m1*P.ell1**2 - P.m2*P.ell2**2 - P.J2z - P.J1y*sp**2 - P.J1z*cp**2)*st*ct
+
+        M = np.array([[P.J1x, 0, -P.J1x * st],
                       [0, M22, M23],
-                      [-P.J1x*np.sin(theta), M23, M33]
+                      [-P.J1x*st, M23, M33]
                       ])
-        C = np.array([[],
-                      [],
-                      [],
+        C = np.array([[(P.J1y - P.J1z)*sp*cp*(thetadot**2 - ct**2 * psidot**2) +\
+                       ((P.J1y - P.J1z)*(cp**2 - sp**2) - P.J1x) * ct*thetadot*psidot],
+                       
+                      [2*(P.J1z-P.J1y)*sp*cp*phidot*thetadot +\
+                       ((P.J1y-P.J1z)*(cp**2 - sp**2)+P.J1x)*ct*phidot*psidot - 0.5*N33*psidot**2],
+
+                      [thetadot**2 * (P.J1z-P.J1y)*sp*cp*st +\
+                       ((P.J1y-P.J1z)*(cp**2-sp**2))*ct*phidot*thetadot +\
+                       (P.J1z-P.J1y)*sp*cp*st*thetadot**2 + 2*(P.J1y-P.J1z)*sp*cp*phidot*psidot +\
+                       2*(-P.m1*P.ell1**1 - P.m2*P.ell2**2 - P.J2z + P.J1x + P.J2x + P.J1y*sp**2 + P.J1z*sp**2)*st*ct*thetadot*psidot],
                      ])
         partialP = np.array([[0],
                              [(P.m1 * P.ell1 + P.m2*P.ell2)*P.g*np.cos(theta)],
@@ -74,9 +90,9 @@ class HummingbirdDynamics:
                             ])
         force = P.km * (pwm_left + pwm_right)
         torque = self.d * P.km * (pwm_left - pwm_right)
-        tau = np.array([[],
-                        [],
-                        []])
+        tau = np.array([[self.d*(pwm_left - pwm_right)],
+                        [self.ellT*(pwm_left - pwm_right)*cp],
+                        [self.ellT*(pwm_left - pwm_right)*ct*sp - self.d*(pwm_left - pwm_right)*st]])
         B = 0.001 * np.eye(3) # not sure if this is right
         qddot = np.linalg.inv(M) @ (-C - partialP + tau - B @ state[3:6])
         phiddot = qddot[0][0]
@@ -93,9 +109,9 @@ class HummingbirdDynamics:
 
     def h(self):
         # return y = h(x)
-        phi = 
-        theta = 
-        psi = 
+        phi = self.state[0][0]
+        theta = self.state[1][0]
+        psi = self.state[2][0]
         y = np.array([[phi], [theta], [psi]])
         return y
 
