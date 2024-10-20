@@ -8,65 +8,75 @@ class ctrlPD:
         #       PD Control: Time Design Strategy
         ####################################################
         # tuning parameters
-        tr_th = 1 # rise time for inner loop
-        zeta_th = 0.707  # inner loop damping ratio 
-        M = 10.0  # Time scale separation between loops
-        zeta_phi = 0.707  # outer loop damping ratio
+        tr_h = 4.0 # rise time for altitude - tuned for best rise time without saturation
+        zeta_h = 0.707 # damping ratio for altitude
+        tr_z = 4.0 # rise time for outer lateral loop (position) - tuned for best rise time w/o saturation
+        zeta_z = 0.707
+        zeta_th = 0.707
+
         # saturation limits
-        self.theta_max = 30.0*np.pi/180.0  
-            # maximum commanded base angle
+        self.theta_max = 10.0 * np.pi / 180.0 # Max theta, rads
+
+        # equilibrium force
+        self.Fe = (P.mc + 2.0 * P.mr) * P.g
+
         #---------------------------------------------------
-        #                    Inner Loop
+        #          Longitudinal control (altitude)
+        #---------------------------------------------------
+        wn_h = 2.2/tr_h  # natural frequency
+        Delta_cl_d = [1, 2*zeta_h*wn_h, wn_h**2.0]  # desired closed loop
+        self.kp_h = Delta_cl_d[2] * (P.mc+2.0*P.mr) # kp - altitude
+        self.kd_h = Delta_cl_d[1] * (P.mc+2.0*P.mr) # kd = altitude
+
+        #---------------------------------------------------
+        #           Lateral control (left-right)
         #---------------------------------------------------
         # PD design for inner loop
-        wn_th = 2.2 / tr_th
-        self.kp_th = 0.238 # wn_th**2 * (P.Js + P.Jp)
-        self.kd_th = 0.153 # 2 * zeta_th * wn_th * (P.Js + P.Jp)
-        # DC gain for inner loop
-        DC_th = 1
-        #---------------------------------------------------
-        #                    Outer Loop
-        #---------------------------------------------------
+        M = 10.0 # time separation between inner and outer lateral loops
+        b0 = 1.0/(P.Jc + 2.0*P.mr*P.d**2)
+        tr_th = tr_z/M
+        wn_th = 2.2/tr_th
+        self.kp_th = wn_th**2.0/b0
+        self.kd_th = 2.0*zeta_th*wn_th/b0
+
         # PD design for outer loop
-        tr_phi = M * tr_th  # rise time for outer loop
-        wn_phi =2.2 / tr_phi
-        AA = np.array([
-            [P.k * DC_th, -P.b * DC_th * wn_phi**2],
-            [P.b * DC_th, \
-                P.k * DC_th \
-                    - 2 * zeta_phi * wn_phi * P.b * DC_th]])    
-        bb = np.array([
-                    [-P.k + P.Jp * wn_phi**2],
-                    [-P.b + 2 * P.Jp * zeta_phi * wn_phi]])
-        tmp = np.linalg.inv(AA) @ bb
-        self.kp_phi = tmp[0][0]
-        self.kd_phi = tmp[1][0]
-        # DC gain for outer loop
-        k_DC_phi = P.k * DC_th * self.kp_phi \
-            / (P.k + P.k * DC_th * self.kp_phi)
+        b1 = -self.Fe/(P.mc+2.0*P.mr)
+        a1 = P.mu/(P.mc+2.0*P.mr)
+        wn_z = 2.2/tr_z
+        self.kp_z = wn_z**2.0/b1
+        self.kd_z = (2.0*zeta_z*wn_z - a1)/b1
+
         # print control gains to terminal        
-        print('k_DC_phi', k_DC_phi)
+        print('kp_z: ', self.kp_z)
+        print('kd_z: ', self.kd_z)
+        print('kp_h: ', self.kp_h)
+        print('kd_h: ', self.kd_h)
         print('kp_th: ', self.kp_th)
         print('kd_th: ', self.kd_th)
-        print('kp_phi: ', self.kp_phi)
-        print('kd_phi: ', self.kd_phi)
 
-    def update(self, phi_r, state):
-        theta = state[0][0]
-        phi = state[1][0]
-        thetadot = state[2][0]
-        phidot = state[3][0]
-        # outer loop: outputs the reference angle for theta
-        # note that book recommends a feed forward term because
-        # of poor DC gain on the outer loop which
-        # is why we add an addition "phi_r" at the end
-        theta_r = self.kp_phi * (phi_r - phi) \
-            - self.kd_phi * phidot + phi_r
-        theta_r = saturate(theta_r, self.theta_max)
-        # inner loop: outputs the torque applied to the base
-        tau = self.kp_th * (theta_r - theta) \
-            - self.kd_th * thetadot
-        return saturate(tau, P.tau_max)
+    def update(self, reference, state):
+        z_r = reference[0][0]
+        h_r = reference[1][0]
+        z = state[0][0]
+        h = state[1][0]
+        theta = state[2][0]
+        zdot = state[3][0]
+        hdot = state[4][0]
+        thetadot = state[5][0]
+
+        # calculate control for the altitude loop
+        F_tilde = self.kp_h * (h_r - h) - self.kd_h * hdot
+        F = saturate( F_tilde * self.Fe, 2*P.fmax)
+
+        # calculate thera_r from the outer loop
+        theta_r = saturate( self.kp_z * (z_r-z) - self.kd_z * zdot, self.theta_max )
+
+        # calculate torque from the inner loop
+        tau = saturate( self.kp_th * (theta_r-theta) - self.kd_th*thetadot, 2*P.fmax*P.d)
+
+        motor_thrusts = P.mixing @ np.array([[F], [tau]])
+
+        return motor_thrusts
 
 
 def saturate(u, limit):

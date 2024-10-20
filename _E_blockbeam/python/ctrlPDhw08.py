@@ -7,39 +7,34 @@ class ctrlPD:
         #       PD Control: Time Design Strategy
         ####################################################
         # tuning parameters
-        tr_th = 1             # Rise time for inner loop (theta)
+        tr_z = 1             # Rise time for inner loop (z)
         zeta_th = 0.707       # inner loop Damping Coefficient
-        M = 10.0              # Time scale separation 
         zeta_z = 0.707        # outer loop Damping Coefficient
-        # saturation limits
-        F_max = 5000          		  # Max Force, N
-        error_max = 1        		  # Max step size,m
-        theta_max = 30.0 * np.pi / 180.0  # Max theta, rads
+
         #---------------------------------------------------
         #                    Inner Loop
         #---------------------------------------------------
         # parameters of the open loop transfer function
-        b0_th = 1.0 / (P.m1 * (P.length / 6.0) \
-            + P.m2 * (2.0 * P.length / 3.0))
-        a0_th = (P.m1 + P.m2) * P.g / (P.m1 * (P.length / 6.0) \
-            + P.m2 * (2.0 * P.length / 3.0))
+        ze = P.length/2.0 # equilibrium position - center of beam
+        b0 = P.length/(P.m2*P.length**2/3.0+P.m1*ze**2)
+        M = 10.0              # Time scale separation 
+        tr_th = tr_z/M # rise time for inner loop
         # coefficients for desired inner loop
         wn_th = 2.2 / tr_th     # Natural frequency
         # compute gains
-        self.kp_th = 1.83 # -(wn_th**2 + a0_th) / b0_th # 
-        self.kd_th = 1.17 #  -(2.0 * zeta_th * wn_th) / b0_th
-        DC_gain = 1 # b0_th * self.kp_th / (b0_th * self.kp_th + a0_th)
+        self.kp_th = wn_th**2/b0 # 1.83
+        self.kd_th = 2.0*zeta_th*wn_th/b0 # 1.17
+        DC_gain = 1.0
         #---------------------------------------------------
         #                    Outer Loop
         #---------------------------------------------------
         # coefficients for desired outer loop
-        tr_z = M * tr_th  # desired rise time, s
+        # desired rise time, s, defined in "tuning parameters"
         wn_z = 2.2 / tr_z  # desired natural frequency
         # compute gains
-        a = wn_z**2*np.sqrt(2.0*P.length/3.0/P.g)-2.0*zeta_z*wn_z
-        self.kd_z = -0.0317 # a / (a + np.sqrt(3.0*P.g/2.0/P.length))
-        self.kp_z = -0.00494 # -wn_z**2*np.sqrt(2.0*P.length/3.0/P.g)*(1+self.kd_z)
-        # print control gains to terminal        
+        self.kd_z = -wn_z**2/P.g # -0.0317
+        self.kp_z = -2.0*zeta_z*wn_z/P.g # -0.00494
+        # print control gains to terminal
         print('DC_gain', DC_gain)
         print('kp_th: ', self.kp_th)
         print('kd_th: ', self.kd_th)
@@ -58,16 +53,15 @@ class ctrlPD:
         # the reference angle for theta comes from the
         # outer loop PD control
 
-        ze = P.length*0
-        tmp = self.kp_z * (z_r - z) - self.kd_z * zdot + ze
-        # low pass filter the outer loop to cancel
-        # left-half plane zero and DC-gain
-        theta_r = self.filter.update(tmp)
-        # the force applied to the cart comes from the
-        # inner loop PD control
-        Fe = (P.m2 + 0.2)*P.g/2 # define equilibrium force
+        theta_r = self.kp_z * (z_r - z) - self.kd_z * zdot
+        Fe = P.m2*P.g/2.0 + P.m1*P.g*z / P.length # define equilibrium force
         F = self.kp_th * (theta_r - theta) - self.kd_th * thetadot + Fe
-        return F
+        return saturate(F, P.Fmax)
+
+def saturate(u, limit):
+    if abs(u) > limit:
+        u = limit * np.sign(u)
+    return u
 
 class zeroCancelingFilter:
     def __init__(self, DC_gain):
@@ -79,9 +73,3 @@ class zeroCancelingFilter:
         # integrate using RK1
         self.state += P.Ts * (-self.b * self.state + self.a * input)
         return self.state
-
-
-
-
-
-

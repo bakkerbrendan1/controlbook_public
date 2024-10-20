@@ -6,13 +6,14 @@ from VTOLAnimation import VTOLAnimation
 from dataPlotter import dataPlotter
 from VTOLDynamics import VTOLDynamics
 from ctrlPDhw08 import ctrlPD
+import matplotlib
+matplotlib.use('tkagg')
 
 # instantiate satellite, controller, and reference classes
 VTOL = VTOLDynamics()
 controller = ctrlPD()
-reference = signalGenerator(amplitude=15.0*np.pi/180.0,
-                            frequency=0.015)
-disturbance = signalGenerator(amplitude=0.0)
+z_reference = signalGenerator(amplitude=2.5, frequency=0.04, y_offset=3.0)
+h_reference = signalGenerator(amplitude=3.0, frequency=0.03, y_offset=5.0)
 
 # instantiate the simulation plots and animation
 dataPlot = dataPlotter()
@@ -27,17 +28,21 @@ while t < P.t_end:  # main simulation loop
 
     # updates control and dynamics at faster simulation rate
     while t < t_next_plot:  
-        r = reference.square(t)  # reference input
-        d = disturbance.step(t)  # input disturbance
+        h_ref = h_reference.square(t)  # reference input
+        z_ref = z_reference.square(t)
+        r = np.array([[z_ref], [h_ref]])
+        d = np.array([[0.0] ,[0.0]])
         n = 0.0  #noise.random(t)  # simulate sensor noise
         x = VTOL.state
+
+        # controller here takes 2x1 nparray of zref and h
         u = controller.update(r, x)  # update controller
         y = VTOL.update(u + d)  # propagate system
         t = t + P.Ts  # advance time by Ts
 
     # update animation and data plots
     animation.update(VTOL.state)
-    dataPlot.update(t, r, VTOL.state, u)
+    dataPlot.update(t, VTOL.state, z_ref, h_ref, 0, 0)
 
     # the pause causes the figure to display for the simulation.
     plt.pause(0.0001)  

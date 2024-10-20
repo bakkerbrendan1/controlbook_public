@@ -24,7 +24,7 @@ target0 = 0.0
 
 # Simulation Parameters
 t_start = 0.0 # Start time of simulation
-t_end = 15.0  # End time of simulation
+t_end = 30.0  # End time of simulation
 Ts = 0.01  # sample time for simulation
 t_plot = 0.1 # the plotting and animation is updated at this rate
 
