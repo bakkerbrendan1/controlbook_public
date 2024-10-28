@@ -5,7 +5,12 @@ from signalGenerator import signalGenerator
 from pendulumAnimation import pendulumAnimation
 from dataPlotter import dataPlotter
 from pendulumDynamics import pendulumDynamics
-from ctrlStateFeedback import ctrlStateFeedback
+import matplotlib
+matplotlib.use('tkagg')
+
+# choose one! LQR is an example from class
+# from ctrlStateFeedback import ctrlStateFeedback
+from ctrlLQR import ctrlStateFeedback
 
 # instantiate pendulum, controller, and reference classes
 pendulum = pendulumDynamics()
