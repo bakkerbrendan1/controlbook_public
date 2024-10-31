@@ -19,6 +19,11 @@ class massDynamics:
         self.Ts = P.Ts
         self.force_limit = P.F_max
 
+        
+        print('mass: ', self.m)
+        print('k: ', self.k)
+        print('b: ', self.b)
+
     def update(self, u):
         # This is the external method that takes the input u at time
         # t and returns the output y at time t.

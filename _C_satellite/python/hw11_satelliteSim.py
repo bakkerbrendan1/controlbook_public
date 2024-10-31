@@ -6,6 +6,9 @@ from satelliteAnimation import satelliteAnimation
 from dataPlotter import dataPlotter
 from satelliteDynamics import satelliteDynamics
 from ctrlStateFeedback import ctrlStateFeedback
+import matplotlib
+matplotlib.use('tkagg')
+
 
 # instantiate satellite, controller, and reference classes
 satellite = satelliteDynamics()

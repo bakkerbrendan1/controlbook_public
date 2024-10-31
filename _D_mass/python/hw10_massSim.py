@@ -5,16 +5,15 @@ from signalGenerator import signalGenerator
 from massAnimation import massAnimation
 from dataPlotter import dataPlotter
 from massDynamics import massDynamics
-from ctrlPDhw08 import ctrlPD
+from ctrlPIDhw10 import ctrlPID
 
 import matplotlib
 matplotlib.use('tkagg')
 
 # instantiate arm, controller, and reference classes
-mass = massDynamics(alpha=0.2)
-controller = ctrlPD()
-reference = signalGenerator(amplitude=1, frequency=0.05)
-# force = signalGenerator(amplitude=2, frequency=0.05)
+mass = massDynamics(alpha=0.05)
+controller = ctrlPID()
+reference = signalGenerator(amplitude=1, frequency=0.01)
 disturbance = signalGenerator(amplitude=0.01)
 noise = signalGenerator(amplitude=0.01)
 
@@ -30,8 +29,8 @@ while t < P.t_end:  # main simulation loop
     while t < t_next_plot:
         # Get referenced inputs from signal generators
         r = reference.square(t)
-        d = disturbance.step(t)
-        n = noise.random(t)
+        d = 0 # disturbance.step(t)
+        # n = noise.random(t)
         x = mass.state
         u = controller.update(r, x)
         y = mass.update(u + d)

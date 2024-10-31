@@ -6,6 +6,8 @@ from armAnimation import armAnimation
 from dataPlotter import dataPlotter
 from armDynamics import armDynamics
 from ctrlStateFeedbackIntegrator import ctrlStateFeedbackIntegrator
+import matplotlib
+matplotlib.use('tkagg')
 
 # instantiate arm, controller, and reference classes
 arm = armDynamics(alpha=0.2)
