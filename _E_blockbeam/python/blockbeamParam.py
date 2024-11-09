@@ -7,6 +7,7 @@ m1 = 0.35  # Mass of the block, kg
 m2 = 2.0  # mass of beam, kg
 length = 0.5  # length of beam, m
 g = 9.8  # gravity at sea level, m/s^2
+ze = length/2
 
 # parameters for animation
 width = 0.05  # width of block
@@ -25,7 +26,7 @@ Ts = 0.01  # sample time for simulation
 t_plot = 0.1  # the plotting and animation is updated at this rate
 
 # saturation limits
-Fmax = 50_000  # Max Force, N
+Fmax = 50  # Max Force, N
 
 # dirty derivative parameters
 # sigma =   # cutoff freq for dirty derivative

@@ -6,6 +6,8 @@ import numpy as np
 import pyqtgraph as pg
 import pyqtgraph.opengl as gl
 import pyqtgraph.Vector as Vector
+import matplotlib
+matplotlib.use('tkagg')
 
 
 class HummingbirdAnimation:

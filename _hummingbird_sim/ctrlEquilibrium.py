@@ -17,6 +17,7 @@ class ctrlEquilibrium:
         ur = 1/(2*P.km) * (force - torque/P.d)
         pwm = np.array([[ul], 
                         [ur]])
+        # print(pwm)
         pwm = saturate(pwm, 0, 1) 
         return pwm
 

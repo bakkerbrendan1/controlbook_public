@@ -4,9 +4,9 @@ import massParam as P
 class ctrlPID:
     def __init__(self):
         # tuning parameters
-        tr = 2.0
-        zeta = 0.7
-        self.ki = 0.3 # integrator gain
+        tr = 1.0
+        zeta = 0.707
+        self.ki = 1.5 # integrator gain
 
         # PD gains
         # open loop char polynomial and poles
@@ -16,8 +16,8 @@ class ctrlPID:
         alpha1 = 2.0 * zeta * wn
         alpha0 = wn**2
         
-        self.kp = 5.05 # P.m * (alpha0 - a0) # 5.05
-        self.kd = 7.2 # P.m * (alpha1 - a1) # 7.2
+        self.kp = P.m * (alpha0 - a0) # 5.05
+        self.kd = P.m * (alpha1 - a1) # 7.2
         print('kp: ', self.kp)
         print('kd: ', self.kd)
         print('ki: ', self.ki)

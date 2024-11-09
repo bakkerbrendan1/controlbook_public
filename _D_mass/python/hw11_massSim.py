@@ -5,15 +5,15 @@ from signalGenerator import signalGenerator
 from massAnimation import massAnimation
 from dataPlotter import dataPlotter
 from massDynamics import massDynamics
-from ctrlPIDhwD10 import ctrlPID
+from ctrlStateFeedback_hwD11 import ctrlStateFeedback
 
 import matplotlib
 matplotlib.use('tkagg')
 
 # instantiate arm, controller, and reference classes
 mass = massDynamics(alpha=0.2)
-controller = ctrlPID()
-reference = signalGenerator(amplitude=1, frequency=0.01)
+controller = ctrlStateFeedback()
+reference = signalGenerator(amplitude=1, frequency=0.05)
 disturbance = signalGenerator(amplitude=0.01)
 noise = signalGenerator(amplitude=0.01)
 

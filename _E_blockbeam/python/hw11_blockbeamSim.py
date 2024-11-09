@@ -5,13 +5,13 @@ from signalGenerator import signalGenerator
 from blockbeamAnimation import blockbeamAnimation
 from dataPlotter import dataPlotter
 from blockbeamDynamics import blockbeamDynamics
-from ctrlPDhwE10 import ctrlPID
+from ctrlStateFeedback_hwE11 import ctrlStateFeedback
 import matplotlib
 matplotlib.use('tkagg')
 
 # instantiate pendulum, controller, and reference classes
 blockbeam = blockbeamDynamics(alpha=0.2)
-controller = ctrlPID()
+controller = ctrlStateFeedback()
 
 # HW asked for reference input frequency of 0.01
 reference = signalGenerator(amplitude=0.2, frequency=0.05, y_offset=0.25)

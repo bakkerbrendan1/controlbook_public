@@ -6,6 +6,7 @@ class ctrlPID:
         # dirty derivative parameters
         self.sigma = 0.05 # cutoff freq for dirty derivative
         self.beta = (2 * self.sigma - P.Ts) / (2 * self.sigma + P.Ts)
+        self.theta_max = 5.0 * np.pi / 180.0  # Max theta
 
         ####################################################
         #       PD Control: Time Design Strategy
@@ -14,7 +15,7 @@ class ctrlPID:
         tr_z = 1             # Rise time for inner loop (z)
         zeta_th = 0.707       # inner loop Damping Coefficient
         zeta_z = 0.707        # outer loop Damping Coefficient
-        self.ki_z = -0.01 # select integrator gain
+        self.ki_z = -0.4 # select integrator gain
 
         #---------------------------------------------------
         #                    Inner Loop
@@ -37,8 +38,8 @@ class ctrlPID:
         # desired rise time, s, defined in "tuning parameters"
         wn_z = 2.2 / tr_z  # desired natural frequency
         # compute gains
-        self.kd_z = -wn_z**2/P.g # -0.0317
-        self.kp_z = -2.0*zeta_z*wn_z/P.g # -0.00494
+        self.kp_z = -wn_z**2/P.g # -0.0317
+        self.kd_z = -2.0*zeta_z*wn_z/P.g # -0.00494
         # print control gains to terminal
         print('DC_gain', DC_gain)
         print('kp_th: ', self.kp_th)
@@ -64,14 +65,49 @@ class ctrlPID:
     def update(self, z_r, state):
         z = state[0][0]
         theta = state[1][0]
-        zdot = state[2][0]
-        thetadot = state[3][0]
+        # self.z_dot = state[2][0]
+        # self.theta_dot = state[3][0]
         # the reference angle for theta comes from the
         # outer loop PD control
+        error_z = z_r - z
+        self.integrator_z = self.integrator_z \
+            + (P.Ts / 2) * (error_z + self.error_z_d1)
+        self.z_dot = self.beta * self.z_dot \
+            + (1 - self.beta) * ((z - self.z_d1) / P.Ts)
+        # PID control - unsaturated
+        theta_r_unsat = self.kp_z * error_z \
+                + self.ki_z * self.integrator_z \
+                - self.kd_z * self.z_dot
+        # saturate theta_r
+        theta_r = saturate(theta_r_unsat, self.theta_max)
+        # integrator anti-windup
+        if self.ki_z != 0.0: 
+            self.integrator_z = self.integrator_z \
+                + P.Ts / self.ki_z * (theta_r - theta_r_unsat)
+        # theta_r = self.filter.update(theta_r)
 
-        theta_r = self.kp_z * (z_r - z) - self.kd_z * zdot
-        Fe = P.m2*P.g/2.0 + P.m1*P.g*z / P.length # define equilibrium force
-        F = self.kp_th * (theta_r - theta) - self.kd_th * thetadot + Fe
+        # Update inner loop (theta-control)
+        
+        error_th = theta_r - theta
+
+        # use dirty derivative
+        self.theta_dot = self.beta * self.theta_dot \
+            + (1 - self.beta) * ((theta - self.theta_d1) / P.Ts)
+        
+        # PD control on theta
+        theta_r = self.kp_z * (z_r - z) - self.kd_z * self.z_dot
+
+        theta_r = self.filter.update(theta_r)
+
+        F_fl = P.m2*P.g/2.0 + P.m1*P.g*z / P.length # define equilibrium force
+        F_tilde = self.kp_th * error_th - self.kd_th * self.theta_dot
+        F = F_tilde + F_fl
+
+        self.error_z_d1 = error_z
+        self.z_d1 = z
+        self.theta_d1 = theta
+
+        # return saturated force
         return saturate(F, P.Fmax)
 
 def saturate(u, limit):

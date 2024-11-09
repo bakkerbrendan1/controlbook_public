@@ -36,8 +36,8 @@ mixing = np.linalg.inv(unmixing) # converts force and torque (FT) to fl and fr (
 
 # Simulation Parameters
 t_start = 0.0  # Start time of simulation
-t_end = 100.0  # End time of simulation
-Ts = 0.01  # sample time for simulation
+t_end = 10.0  # End time of simulation
+Ts = 0.1  # sample time for simulation
 t_plot = 0.1  # the plotting and animation is updated at this rate
 # saturation limits
 force_max = 2.0                # Max force N
