@@ -17,7 +17,7 @@ disturbance = signalGenerator(amplitude=0.01)
 noise = signalGenerator(amplitude=0.01)
 
 # instantiate the simulation plots and animation
-dataPlot = dataPlotter()
+# dataPlot = dataPlotter()
 dataPlotObserver = dataPlotterObserver()
 animation = armAnimation()
 
@@ -42,7 +42,7 @@ while t < P.t_end:  # main simulation loop
 
     # update animation and data plots
     animation.update(arm.state)
-    dataPlot.update(t, r, arm.state, u)
+    # dataPlot.update(t, r, arm.state, u)
     dataPlotObserver.update(t, arm.state, xhat, d, 0.0)
 
     # the pause causes the figure to display during simulation
