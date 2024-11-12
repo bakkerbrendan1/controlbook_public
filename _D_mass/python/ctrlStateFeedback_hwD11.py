@@ -12,11 +12,9 @@ class ctrlStateFeedback:
         # State Space Equations
         # xdot = A*x + B*u
         # y = C*x
-        A = np.array([[0.0, 1.0],
-                      [-0.6, -0.1]])
-        B = np.array([[0.0],
-                      [0.2]])
-        C = np.array([1, 0]).T
+        A = P.A
+        B = P.B
+        C = P.C
 
         # gain calculation
         wn = 2.2 / tr

@@ -9,6 +9,18 @@ length = 0.5  # length of beam, m
 g = 9.8  # gravity at sea level, m/s^2
 ze = length/2
 
+# state space matrices (hw 11, 12)
+A = np.array([[0.0, 0.0, 1.0, 0.0],
+              [0.0, 0.0, 0.0, 1.0],
+              [0.0, -g, 0.0, 0.0],
+              [0.0, 0.0, 0.0, 0.0]])
+B = np.array([[0.0],
+              [0.0],
+              [0.0],
+              [length/(length**2 * m2 / 3 + m1 * ze**2)]])
+C = np.array([[1.0, 0.0, 0.0, 0.0],
+              [0.0, 1, 0.0, 0.0]])
+
 # parameters for animation
 width = 0.05  # width of block
 height = width*0.25  # height of block

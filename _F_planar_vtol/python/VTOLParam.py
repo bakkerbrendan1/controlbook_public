@@ -8,10 +8,47 @@ Jc = 0.0042  # kg m^2
 d = 0.3  # m
 mu = 0.1  # kg/s
 g = 9.81  # m/s^2
-F_wind = 0.0 # wind disturbance force is zero in initial homeworks
+F_wind = 5.0 # wind disturbance force is zero in initial homeworks
 
 # parameters for animation
 length = 10.0
+
+Fe = (mc + 2.0 * mr) * g
+
+A_lat = np.array([[0, 0, 1, 0],
+                  [0, 0, 0, 1],
+                  [0, -Fe/(mc + 2*mr), -mu/(mc + 2*mr), 0],
+                  [0, 0, 0, 0]])
+B_lat = np.array([[0],
+                  [0],
+                  [0],
+                  [1/(Jc + 2*mr*d**2)]])
+C_lat = np.array([[1, 0, 0, 0],
+                  [0, 1, 0, 0]])
+
+A_lon = np.array([[0, 1],
+                  [0, 0]])
+B_lon = np.array([[0],
+                  [1/(mc + 2*mr)]])
+C_lon = np.array([1, 0])
+
+A = np.array([[0, 0, 0, 1, 0, 0],
+              [0, 0, 0, 0, 1, 0],
+              [0, 0, 0, 0, 0, 1],
+              [0, 0, -Fe / (mc + 2 * mr), -mu / (mc + 2 * mr), 0, 0],
+              [0, 0, 0, 0, 0, 0],
+              [0, 0, 0, 0, 0, 0]])
+
+B = np.array([[0, 0],
+              [0, 0],
+              [0, 0],
+              [0, 0],
+              [1 / (mc + 2 * mr), 0],
+              [0, 1 / (Jc + 2 * d**2 * mr)]])
+
+C = np.array([[1,0,0,0,0,0],
+              [0,1,0,0,0,0],
+              [0,0,1,0,0,0]])
 
 # Initial Conditions
 z0 = 0.0  # initial lateral position

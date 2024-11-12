@@ -10,17 +10,9 @@ class ctrlStateFeedback:
         zeta_th = 0.707       # inner loop Damping Coefficient
         zeta_z = 0.707        # outer loop Damping Coefficient
 
-        A = np.array([[0.0, 0.0, 1.0, 0.0],
-                      [0.0, 0.0, 0.0, 1.0],
-                      [0.0, -P.g, 0.0, 0.0],
-                      [0.0, 0.0, 0.0, 0.0]])
-        B = np.array([[0.0],
-                      [0.0],
-                      [0.0],
-                      [P.length/(P.length**2 * P.m2 / 3 + P.m1 * P.ze**2)]
-                      ])
-        C = np.array([[1.0, 0.0, 0.0, 0.0],
-                      [0.0, 1, 0.0, 0.0]])
+        A = P.A
+        B = P.B
+        C = P.C
 
         # gain calculation
         wn_th = 2.2 / tr_th

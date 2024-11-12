@@ -20,40 +20,13 @@ class ctrlStateFeedback:
         tr_th = tr_z / 10.0
         zeta_th = 0.707
 
-        A_lat = np.array([[0, 0, 1, 0],
-                          [0, 0, 0, 1],
-                          [0, -self.Fe/(P.mc + 2*P.mr), -P.mu/(P.mc + 2*P.mr), 0],
-                          [0, 0, 0, 0]])
-        B_lat = np.array([[0],
-                          [0],
-                          [0],
-                          [1/(P.Jc + 2*P.mr*P.d**2)]])
-        C_lat = np.array([[1, 0, 0, 0],
-                          [0, 1, 0, 0]])
-        
-        A_lon = np.array([[0, 1],
-                          [0, 0]])
-        B_lon = np.array([[0],
-                          [1/(P.mc + 2*P.mr)]])
-        C_lon = np.array([1, 0])
+        A_lat = P.A_lat
+        B_lat = P.B_lat
+        C_lat = P.C_lat
 
-        A = np.array([[0, 0, 0, 1, 0, 0],
-                      [0, 0, 0, 0, 1, 0],
-                      [0, 0, 0, 0, 0, 1],
-                      [0, 0, -self.Fe / (P.mc + 2 * P.mr), -P.mu / (P.mc + 2 * P.mr), 0, 0],
-                      [0, 0, 0, 0, 0, 0],
-                      [0, 0, 0, 0, 0, 0]])
-        
-        B = np.array([[0, 0],
-                      [0, 0],
-                      [0, 0],
-                      [0, 0],
-                      [1 / (P.mc + 2 * P.mr), 0],
-                      [0, 1 / (P.Jc + 2 * P.d**2 * P.mr)]])
-        
-        C = np.array([[1,0,0,0,0,0],
-                      [0,1,0,0,0,0],
-                      [0,0,1,0,0,0]])
+        A_lon = P.A_lon
+        B_lon = P.B_lon
+        C_lon = P.C_lon
 
         # gain calculation
         wn_h = 2.2/tr_h

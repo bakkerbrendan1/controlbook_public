@@ -55,7 +55,7 @@ class VTOLDynamics:
         # tmp = np.linalg.inv(M) @ C
         # thetaddot = tmp[0][0]
         # phiddot = tmp[1][0]
-        zvddot = -(self.mu*zvdot + (fl + fr)*np.sin(theta)) / (self.mc + 2.0*self.mr)
+        zvddot = -(self.mu*zvdot + (fl + fr)*np.sin(theta) + P.F_wind) / (self.mc + 2.0*self.mr)
         hddot = (self.g*(-self.mc - 2*self.mr) + (fl+fr)*np.cos(theta)) / (self.mc + 2.0*self.mr)
         thetaddot = (self.d*(fl-fr)) / (self.Jc + 2.0*self.d**2 * self.mr)
         # print(zvdot)
