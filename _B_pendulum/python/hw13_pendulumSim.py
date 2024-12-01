@@ -8,6 +8,9 @@ from pendulumDynamics import pendulumDynamics
 from ctrlObserver import ctrlObserver
 from dataPlotterObserver import dataPlotterObserver
 
+import matplotlib
+matplotlib.use('tkagg')
+
 # instantiate pendulum, controller, and reference classes
 pendulum = pendulumDynamics(alpha=0.0)
 controller = ctrlObserver()

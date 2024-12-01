@@ -1,4 +1,6 @@
 import matplotlib.pyplot as plt 
+import matplotlib
+matplotlib.use("TkAgg")
 from matplotlib.lines import Line2D
 import numpy as np
 
@@ -24,6 +26,10 @@ class dataPlotterObserver:
         self.handle = []
         self.handle.append(myPlot(self.ax[0], ylabel='z (m)', title='Mass Data'))
         self.handle.append(myPlot(self.ax[1], xlabel='t(s)', ylabel='z_dot (ms)'))
+
+        # an attempt to place the figures in a nice location
+        # manager = plt.get_current_fig_manager()
+        # manager.window.wm_geometry("+500+00")  # "+X+Y" sets the top-left corner
 
     def update(self, t, x, x_hat):
         '''

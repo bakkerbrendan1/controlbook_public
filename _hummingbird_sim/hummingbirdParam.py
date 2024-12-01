@@ -30,13 +30,15 @@ J3y = 0.0001956
 J3z = 0.000027
 km = g * (m1 * ell1 + m2 * ell2) / ellT  # need to find this experimentally for hardware
 
+JT = m1*ell1**2 + m2*ell2**2 + J2z + m3*(ell3x**2 + ell3y**2)
+
 # mixing matrix
 unmixing = np.array([[1.0, 1.0], [d, -d]]) # converts fl and fr (LR) to force and torque (FT)
 mixing = np.linalg.inv(unmixing) # converts force and torque (FT) to fl and fr (LR) 
 
 # Simulation Parameters
 t_start = 0.0  # Start time of simulation
-t_end = 10.0  # End time of simulation
+t_end = 20.0  # End time of simulation
 Ts = 0.1  # sample time for simulation
 t_plot = 0.1  # the plotting and animation is updated at this rate
 # saturation limits

@@ -10,16 +10,19 @@ g = 9.8  # gravity at sea level, m/s^2
 ze = length/2
 
 # state space matrices (hw 11, 12)
-A = np.array([[0.0, 0.0, 1.0, 0.0],
-              [0.0, 0.0, 0.0, 1.0],
-              [0.0, -g, 0.0, 0.0],
-              [0.0, 0.0, 0.0, 0.0]])
+A = np.array([
+            [0.0, 0.0, 1.0, 0.0],
+            [0.0, 0.0, 0.0, 1.0],
+            [0.0, -g, 0.0, 0.0],
+            [-m1*g/((m2*length**2)/3.0+m1*(length/2.0)**2), \
+             0.0, 0.0, 0.0]])
 B = np.array([[0.0],
               [0.0],
               [0.0],
-              [length/(length**2 * m2 / 3 + m1 * ze**2)]])
+              [length / (m2 * length ** 2 / 3.0 \
+                            + m1 * length ** 2 / 4.0)]])
 C = np.array([[1.0, 0.0, 0.0, 0.0],
-              [0.0, 1, 0.0, 0.0]])
+              [0.0, 1.0, 0.0, 0.0]])
 
 # parameters for animation
 width = 0.05  # width of block
@@ -38,7 +41,7 @@ Ts = 0.01  # sample time for simulation
 t_plot = 0.1  # the plotting and animation is updated at this rate
 
 # saturation limits
-Fmax = 50  # Max Force, N
+Fmax = 100  # Max Force, N
 
 # dirty derivative parameters
 # sigma =   # cutoff freq for dirty derivative

@@ -12,7 +12,7 @@ class ctrlPD:
         zeta_z = 0.707        # outer loop Damping Coefficient
 
         #---------------------------------------------------
-        #                    Inner Loop
+        #                 Inner Loop: theta
         #---------------------------------------------------
         # parameters of the open loop transfer function
         ze = P.length/2.0 # equilibrium position - center of beam
@@ -26,7 +26,7 @@ class ctrlPD:
         self.kd_th = 2.0*zeta_th*wn_th/b0 # 1.17
         DC_gain = 1.0
         #---------------------------------------------------
-        #                    Outer Loop
+        #                   Outer Loop: z
         #---------------------------------------------------
         # coefficients for desired outer loop
         # desired rise time, s, defined in "tuning parameters"

@@ -25,7 +25,8 @@ C_out = tf([P10.kd_z + P10.kp_z * P10.sigma,
 if __name__=="__main__":
      # display bode plots of transfer functions
      fig1 = plt.figure()
-     bode([P_in, P_in * C_in], dB=dB_flag)
+     # !!!!!!!!!!!!!!!!!!! adjust omega_limits as you please !!!!!!!!!!!!!!!!!!!!
+     bode([P_in, P_in * C_in], omega_limits=[10e-5, 10e3], dB=dB_flag)
      plt.legend(['$P_{in}(s)$', '$C_{in}(s)P_{in}(s)$'])
      fig1.axes[0].set_title('Inverted Pendulum, Inner Loop')
 

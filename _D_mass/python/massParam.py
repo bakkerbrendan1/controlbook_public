@@ -11,7 +11,7 @@ A = np.array([[0.0, 1.0],
                       [-0.6, -0.1]])
 B = np.array([[0.0],
                 [0.2]])
-C = np.array([1, 0]).T
+C = np.array([[1.0, 0.0]])
 
 # parameters for animation
 length = 5.0
