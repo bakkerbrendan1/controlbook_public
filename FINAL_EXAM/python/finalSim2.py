@@ -21,7 +21,7 @@ while t < P.t_end:
     # update animation and data plots
     animation.update(mass.state)
     dataPlot.update(t, 0, mass.state, u)
-    plt.pause(0.0001)
+    # plt.pause(0.0001)
 
 # Keeps the program from closing until the user presses a button.
 print('Press key to close')

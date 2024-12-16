@@ -15,8 +15,12 @@ b = 0.1
 
 # simulation parameters
 t_start = 0.0
-t_end = 100.0
+t_end = 40.0
 Ts = 0.01
 t_plot = 0.1
 sigma = 0.05
 
+# initial conditions
+z0 = 0.
+zdot0 = 0.
+F_e = -np.sqrt(2)/2 * g * m
